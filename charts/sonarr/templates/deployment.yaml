@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sonarr.fullname" . }}
+  labels:
+    {{- include "sonarr.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sonarr.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "sonarr.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8989
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: PUID
+              value: "{{ .Values.sonarr.puid }}"
+            - name: PGID
+              value: "{{ .Values.sonarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.sonarr.timezone }}"
+            - name: UMASK_SET
+              value: "{{ .Values.sonarr.umask_set}}"
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /downloads
+              name: downloads
+      volumes:
+        - name: config
+          nfs:
+            server: "{{ .Values.sonarr.volumes.config.server }}" 
+            path: "{{ .Values.sonarr.volumes.config.path }}" 
+        - name: downloads
+          nfs:
+            server: "{{ .Values.sonarr.volumes.downloads.server }}" 
+            path: "{{ .Values.sonarr.volumes.downloads.path }}" 
