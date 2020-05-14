@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "radarr.fullname" . }}
+  labels:
+    {{- include "radarr.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "radarr.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "radarr.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 7878
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: PUID
+              value: "{{ .Values.radarr.puid }}"
+            - name: PGID
+              value: "{{ .Values.radarr.pgid }}"
+            - name: TZ
+              value: "{{ .Values.radarr.timezone }}"
+            - name: UMASK_SET
+              value: "{{ .Values.radarr.umask_set}}"
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /downloads
+              name: downloads
+      volumes:
+        - name: config
+          nfs:
+            server: "{{ .Values.radarr.volumes.config.server }}" 
+            path: "{{ .Values.radarr.volumes.config.path }}" 
+        - name: downloads
+          nfs:
+            server: "{{ .Values.radarr.volumes.downloads.server }}" 
+            path: "{{ .Values.radarr.volumes.downloads.path }}" 
