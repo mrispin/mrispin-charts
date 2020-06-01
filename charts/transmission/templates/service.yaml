@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "transmission.fullname" . }}-tcp
+  labels:
+    {{- include "transmission.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: transmission
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.gui.port }}
+      targetPort: trans-gui
+      protocol: TCP
+      name: trans-gui
+    - port: {{ .Values.service.bt.port }}
+      targetPort: trans-tcp
+      protocol: TCP
+      name: trans-tcp
+  selector:
+    {{- include "transmission.selectorLabels" . | nindent 4 }}
+  loadBalancerIP: {{ .Values.service.externalIp }}
+  externalTrafficPolicy: {{ .Values.service.trafficPolicy }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "transmission.fullname" . }}-udp
+  labels:
+    {{- include "transmission.labels" . | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: transmission
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.bt.port }}
+      targetPort: trans-udp
+      protocol: UDP
+      name: trans-udp
+  selector:
+    {{- include "transmission.selectorLabels" . | nindent 4 }}
+  loadBalancerIP: {{ .Values.service.externalIp }}
+  externalTrafficPolicy: {{ .Values.service.trafficPolicy }}

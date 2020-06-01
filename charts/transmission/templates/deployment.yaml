@@ -19,13 +19,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
+            - name: trans-gui
               containerPort: 9091
               protocol: TCP
-            - name: transmissiontcp
+            - name: trans-tcp
               containerPort: 51413
               protocol: TCP
-            - name: transmissionudp
+            - name: trans-udp
               containerPort: 51413
               protocol: UDP
           resources:
