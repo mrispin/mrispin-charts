@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "transmission.fullname" . }}
+  labels:
+    {{- include "transmission.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "transmission.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "transmission.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9091
+              protocol: TCP
+            - name: transmissiontcp
+              containerPort: 51413
+              protocol: TCP
+            - name: transmissionudp
+              containerPort: 51413
+              protocol: UDP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: PUID
+              value: "{{ .Values.transmission.puid }}"
+            - name: PGID
+              value: "{{ .Values.transmission.pgid }}"
+            - name: TZ
+              value: "{{ .Values.transmission.timezone }}"
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /downloads
+              name: downloads
+      volumes:
+        - name: config
+          nfs:
+            server: "{{ .Values.transmission.volumes.config.server }}" 
+            path: "{{ .Values.transmission.volumes.config.path }}" 
+        - name: downloads
+          nfs:
+            server: "{{ .Values.transmission.volumes.downloads.server }}" 
+            path: "{{ .Values.transmission.volumes.downloads.path }}" 
