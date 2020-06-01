@@ -26,10 +26,18 @@ spec:
             httpGet:
               path: /
               port: http
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /
               port: http
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            failureThreshold: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
