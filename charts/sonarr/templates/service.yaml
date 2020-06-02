@@ -8,8 +8,12 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: 8989
       protocol: TCP
-      name: http
+      name: sonarr
   selector:
     {{- include "sonarr.selectorLabels" . | nindent 4 }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  loadBalancerIP: {{ .Values.service.externalIp }}
+  externalTrafficPolicy: {{ .Values.service.trafficPolicy }}
+  {{- end }}

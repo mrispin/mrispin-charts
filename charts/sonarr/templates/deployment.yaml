@@ -19,13 +19,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
+            - name: sonarr
               containerPort: 8989
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: sonarr
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 5
@@ -33,7 +33,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: sonarr
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 5

@@ -23,7 +23,7 @@ transmission:
 service:
   type: LoadBalancer
   gui:
-    port: 9091
+    port: 80
   bt:
     port: 51413
   externalIp: 192.168.10.10

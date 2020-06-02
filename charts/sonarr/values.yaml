@@ -22,8 +22,11 @@ sonarr:
       path: /downloads
 
 service:
-  type: ClusterIP
-  port: 8989
+  type: LoadBalancer
+  port: 80
+  externalIp: 192.168.10.20
+  # Local or Cluster
+  trafficPolicy: Local
 
 ingress:
   enabled: false

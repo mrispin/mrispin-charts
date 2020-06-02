@@ -10,11 +10,11 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.gui.port }}
-      targetPort: trans-gui
+      targetPort: 9091
       protocol: TCP
       name: trans-gui
     - port: {{ .Values.service.bt.port }}
-      targetPort: trans-tcp
+      targetPort: 51413
       protocol: TCP
       name: trans-tcp
   selector:
@@ -34,7 +34,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.bt.port }}
-      targetPort: trans-udp
+      targetPort: 51413
       protocol: UDP
       name: trans-udp
   selector:
