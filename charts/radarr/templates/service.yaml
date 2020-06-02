@@ -8,8 +8,12 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: 7878
       protocol: TCP
-      name: http
+      name: radarr
   selector:
     {{- include "radarr.selectorLabels" . | nindent 4 }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  loadBalancerIP: {{ .Values.service.externalIp }}
+  externalTrafficPolicy: {{ .Values.service.trafficPolicy }}
+  {{- end }}
