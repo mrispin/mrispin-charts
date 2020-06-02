@@ -56,9 +56,12 @@ spec:
               name: downloads
       volumes:
         - name: config
-          nfs:
-            server: "{{ .Values.radarr.volumes.config.server }}" 
-            path: "{{ .Values.radarr.volumes.config.path }}" 
+          iscsi:
+            targetPortal: 10.10.10.14:3260
+            iqn: iqn.2020-05.risp.in:radarr
+            lun: 1
+            fsType: ext4
+            readOnly: false
         - name: downloads
           nfs:
             server: "{{ .Values.radarr.volumes.downloads.server }}" 
